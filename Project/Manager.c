@@ -7,10 +7,11 @@ struct Student
     char lastName[50];
     char department[50];
     float grades[10];
-    float gpa[10];
+    float gpa[4];
     float cgpa[2];
 };
 
+// Declerations of functions
 void registerStudent(struct Student *student);
 void printAllStudent(int numStudents, struct Student totalStudent[numStudents]);
 void computeGPA(struct Student *student, int numSemester);
@@ -70,7 +71,7 @@ void registerStudent(struct Student *student)
 {
     printf("\nEnter student First Name: ");
     scanf("%s", student->firstName);
-    printf("\nEnter student Last Name: ");
+    printf("Enter student Last Name: ");
     scanf("%s", student->lastName);
     printf("Enter department: ");
     scanf("%s", student->department);

@@ -30,6 +30,7 @@ void recordAssetsAndLiabilities(struct CooperativeSociety *society);
 
 void printAllMember(struct CooperativeSociety *society);
 void provideLoan(struct CooperativeSociety *society);
+void deductLoan(struct CooperativeSociety *society);
 int main()
 {
     struct CooperativeSociety society;
@@ -43,7 +44,7 @@ int main()
         printf("1. Add Member\n");
         printf("2. Record Assets and Liabilities\n");
         printf("3. Provide Loan\n");
-        printf("4. Charge Interest\n");
+        printf("4. Deduct Loan\n");
         printf("5. Print All Members\n");
         printf("6. Exit\n");
         printf("Enter your choice: ");
@@ -59,6 +60,9 @@ int main()
             break;
         case 3:
             provideLoan(&society);
+            break;
+        case 4:
+            deductLoan(&society);
             break;
         case 5:
             printAllMember(&society);
@@ -154,30 +158,32 @@ void provideLoan(struct CooperativeSociety *society)
             if (membershipDuration >= 6)
             {
                 // loan duration
+                int loanDuration;
                 printf("\n \nInput Loan Duration: \n");
-                scanf("%d", &(society->members[i].loanDuration));
+                scanf("%d", &loanDuration);
+                society->members[i].loanDuration = loanDuration;
                 printf("Loan duration is %d months\n", society->members[i].loanDuration);
 
                 // Calculate interest Rate
                 float interestRate = 0.0;
-                if (society->members[i].loanDuration <= 12)
+                if (loanDuration < 13)
                 {
                     interestRate = 5.0;
                 }
-                // else if (society->members[i].loanDuration == 18)
-                // {
-                //     interestRate = 8.0;
-                // }
-
-                // Calculate interest Amount
-                float interestAmount = (interestRate / 100) * society->members[i].loan;
-                printf("Interest Amount is %f \n", interestAmount);
-
+                else if (loanDuration >= 18)
+                {
+                    interestRate = 8.0;
+                }
+                printf("Interest rate is %.2f \n", interestRate);
                 // Calculate the loan amount
-                float loanAmount = 2 * society->members[i].deposits + interestAmount;
-                society->members[i].loan += loanAmount;
-
+                float loanAmount = 2 * society->members[i].deposits;
                 printf("Loan granted: %.2f\n", loanAmount);
+                // Calculate interest Amount
+                float interestAmount = (interestRate / 100) * loanAmount;
+                printf("Interest Amount is %.2f \n", interestAmount);
+                float totalAmount = loanAmount + interestAmount;
+                society->members[i].loan += totalAmount;
+                printf("Total loan amount plus interest is %f \n", totalAmount);
             }
             else
             {
@@ -196,16 +202,26 @@ void provideLoan(struct CooperativeSociety *society)
     }
 }
 
+void deductLoan(struct CooperativeSociety *society)
+{
+    for (int i = 0; i < society->count; i++)
+    {
+        // Deduct the monthly loan installment from deposits
+        float monthlyInstallment = society->members[i].loan / society->members[i].loanDuration;
+        society->members[i].deposits -= monthlyInstallment;
+    }
+}
+
 void printAllMember(struct CooperativeSociety *society)
 {
-    for (int i = 0; i < MAX_MEMBERS; i++)
+    for (int i = 0; i < society->count; i++)
     {
         printf("\nMember : %d \n", i + 1);
         printf("Name: %s", society->members[i].name);
         printf("\nAddress: %s", society->members[i].address);
         printf("\nOccupation: %s", society->members[i].occupation);
         printf("\nAge: %d", society->members[i].age);
-        printf("\nDeposits: %f\n", society->members[i].deposits);
-        printf("\nLoans: %f", society->members[i].loan);
-        }
+        printf("\nDeposits: %f", society->members[i].deposits);
+        printf("\nLoans: %f \n", society->members[i].loan);
+    }
 }
